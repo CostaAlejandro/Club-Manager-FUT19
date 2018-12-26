@@ -352,6 +352,7 @@ while True:
 			sinAsignar = session.watchlist()
 			listaJugadores = []
 			contarJugadores = 0
+			print "\n"
 			for articulo in sinAsignar:
 				bidState = articulo.get("bidState")
 				tradeId = articulo.get("tradeId")
