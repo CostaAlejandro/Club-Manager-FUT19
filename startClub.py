@@ -64,15 +64,17 @@ def buscarJugador():
 		totalEncontrados = busqueda["count"]
 		totalEncontradosF = format(totalEncontrados)
 		print("Se han encontrado " + totalEncontradosF + " jugadores con el nombre buscado. ")
+		contadorJugadores = 0
 		if totalEncontrados > 0:
 			selJugador = []
 			for x in range (totalEncontrados):
 				rating = busqueda["items"][x]["rating"]
 				rarity = busqueda["items"][x]["rarityId"]
-				if rarity != format("18"):
+				if format(rarity) != "18":
+					contadorJugadores = contadorJugadores + 1
 					rarity = rarityCards.get(format(rarity))
 					idJugador = busqueda["items"][x]["id"]
-					print (format(x+1) + ". " + busqueda["items"][x]["firstName"] + " " + busqueda["items"][x]["lastName"] + " (" + \
+					print (format(contadorJugadores) + ". " + busqueda["items"][x]["firstName"] + " " + busqueda["items"][x]["lastName"] + " (" + \
 						  busqueda["items"][x]["position"]+ " " + format(rating) + " - " +busqueda["items"][x]["quality"] + " " + \
 						  rarity + ") " + busqueda["items"][x]["club"]["name"] + " - " + busqueda["items"][x]["league"]["name"]).encode('utf8')
 					selJugador.append(idJugador)
