@@ -69,13 +69,13 @@ def buscarJugador():
 			for x in range (totalEncontrados):
 				rating = busqueda["items"][x]["rating"]
 				rarity = busqueda["items"][x]["rarityId"]
-				if rarity != format()
-				rarity = rarityCards.get(format(rarity))
-				idJugador = busqueda["items"][x]["id"]
-				print (format(x+1) + ". " + busqueda["items"][x]["firstName"] + " " + busqueda["items"][x]["lastName"] + " (" + \
-					  busqueda["items"][x]["position"]+ " " + format(rating) + " - " +busqueda["items"][x]["quality"] + " " + \
-					  rarity + ") " + busqueda["items"][x]["club"]["name"] + " - " + busqueda["items"][x]["league"]["name"]).encode('utf8')
-				selJugador.append(idJugador)
+				if rarity != format("18"):
+					rarity = rarityCards.get(format(rarity))
+					idJugador = busqueda["items"][x]["id"]
+					print (format(x+1) + ". " + busqueda["items"][x]["firstName"] + " " + busqueda["items"][x]["lastName"] + " (" + \
+						  busqueda["items"][x]["position"]+ " " + format(rating) + " - " +busqueda["items"][x]["quality"] + " " + \
+						  rarity + ") " + busqueda["items"][x]["club"]["name"] + " - " + busqueda["items"][x]["league"]["name"]).encode('utf8')
+					selJugador.append(idJugador)
 		else:
 			print "No se han encontrado jugadores. Vuelve a probar. "
 			dormir(2)
