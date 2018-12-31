@@ -8,7 +8,7 @@ import time
 from rarityPlayers import rarityCards
 from futbin import getPrecio, getMinPrecio
 from redondear import formatearPrecio, precioPuja
-from datos import email, password, respuesta
+from datos import email, password, respuesta, plataforma
 
 url = "https://www.easports.com/fifa/ultimate-team/api/fut/item?jsonParamObject="
 
