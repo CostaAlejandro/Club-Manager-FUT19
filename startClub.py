@@ -19,34 +19,22 @@ def menu():
 3. Salir""")
 
 def limpiarLista():
-	vendidos = 0
-	for articulos in session.tradepile():
-		if articulos.get("tradeState") == "closed":
-			vendidos = vendidos + 1
-	if vendidos > 0:
-		print "Limpiando la lista..."
+	try:
 		session.tradepileClear()
-		dormir(2)
 		print u"\nLista de transferibles limpia. Ya no hay ningún artículo vendido. "
 		dormir(2)
-	else:
+	except:
 		print u"\nNo se puede limpiar la lista, no hay artículos para limpiar. Volviendo al menú... "
 		dormir(2)
 
 def relist():
-	novendidos = 0
-	for articulos in session.tradepile():
-		if articulos.get("tradeState") == "expired":
-			novendidos = novendidos + 1
-		if novendidos > 0:
-			print u"Volviendo a poner los artículos en venta..."
-			session.relist()
-			dormir(1)
-			print u"\nArtículos añadidos correctamente. "
-			dormir(2)
-		else:
-			print u"\nNo hay artículos vendidos. Volviendo al menú... "
-			dormir(2)
+	try:
+		session.relist()
+		print u"\nArtículos añadidos correctamente. "
+		dormir(2)
+	except:
+		print u"\nNo hay artículos vendidos. Volviendo al menú... "
+		dormir(2)
 
 def dormir(x):
 	print "......................................................................."
@@ -196,23 +184,23 @@ def listaTransferibles():
 				monedas = " POR " + format(vendido) + " MONEDAS"
 			else:
 				estado = ""
-				playerId = player.get("resourceId")
-				playerId = str(playerId)
-				fifaurl = url + '{"id":"' + playerId + '"}'
-				response = urllib.urlopen(fifaurl)
-				playerInfo = json.loads(response.read())
-				rating = playerInfo["items"][0]["rating"]
-				rarity = playerInfo["items"][0]["rarityId"]
-				rarity = rarityCards.get(format(rarity))
-				print (format(contadorJugadores) + ". " + playerInfo["items"][0]["name"] + " (" + \
-					  playerInfo["items"][0]["position"]+ " " + format(rating) + " - " +playerInfo["items"][0]["quality"] + " " + rarity + ") " + estado).encode('utf8')
+			playerId = player.get("resourceId")
+			playerId = str(playerId)
+			fifaurl = url + '{"id":"' + playerId + '"}'
+			response = urllib.urlopen(fifaurl)
+			playerInfo = json.loads(response.read())
+			rating = playerInfo["items"][0]["rating"]
+			rarity = playerInfo["items"][0]["rarityId"]
+			rarity = rarityCards.get(format(rarity))
+			print (format(contadorJugadores) + ". " + playerInfo["items"][0]["name"] + " (" + \
+				  playerInfo["items"][0]["position"]+ " " + format(rating) + " - " +playerInfo["items"][0]["quality"] + " " + rarity + ") " + estado).encode('utf8')
 		print "\n"
 		
 #EMPIEZA
 
 print (u"Iniciando sesión...")
 
-session = fut.Core(email, password, respuesta, 'xbox')
+session = fut.Core(email, password, respuesta, plataforma)
 
 while True:
 	os.system("cls")
@@ -245,7 +233,8 @@ while True:
 4. Limpiar lista de transferibles. 
 5. Volver a vender un jugador. 
 6. Ver articulos sin asignar. 
-7. Volver al menú. """).encode('utf8')
+7. Vender todos los artículos.
+8. Volver al menú. """).encode('utf8')
 		if ans == "1":
 			totalArticulosLista = len(session.tradepile())
 			listaTransferibles = session.tradepile()
@@ -253,11 +242,15 @@ while True:
 				idFutbin = []
 				listaJugadores = []
 				contarJugadores = 0
+				totalGanado = 0
+				totalGastado = 0
+				totalBeneficios = 0
 				print "\n"
 				otroJugador = False
 				for jugador in listaTransferibles:
 					estado = jugador.get("tradeState")
 					if estado != "active":
+					#	print jugador
 						idBuscar = jugador.get("resourceId")
 						id = jugador.get("id")
 						idBuscar = str(idBuscar)
@@ -270,10 +263,12 @@ while True:
 						idJugador = playerInfo["items"][0]["id"]
 						precioJugador = getPrecio("buscar", idJugador)
 						precioJugador = formatearPrecio(precioJugador)
+						precioCompra = jugador.get("lastSalePrice")
 						contarJugadores = contarJugadores + 1
-						print jugador
+						totalGastado = totalGastado + precioCompra
+						totalGanado = totalGanado + precioJugador
 						print (format(contarJugadores) + ". " + playerInfo["items"][0]["name"] + " (" + \
-							  playerInfo["items"][0]["position"]+ " " + format(rating) + " - " +playerInfo["items"][0]["quality"] + " " + rarity + ")	VALOR: " + format(precioJugador) + " monedas").encode('utf8')
+							  playerInfo["items"][0]["position"]+ " " + format(rating) + " - " +playerInfo["items"][0]["quality"] + " " + rarity + ")	VALOR COMPRA: " + format(precioCompra) + "VALOR ACTUAL: " + format(precioJugador) + " monedas").encode('utf8')
 						listaJugadores.append(id)
 				for x in range (contarJugadores):
 					buscar = input("\n¿Qué jugador quieres poner a la venta en el mercado? ")
@@ -292,6 +287,8 @@ while True:
 						otroJugador = True
 					if otroJugador == True:
 						break
+				totalBeneficios = totalGanado - totalGastado
+				print "Habiendo gastado " + format(totalGastado) + " monedas, tu lista de transferibles tiene un valor de " + format(totalGanado) + " monedas, lo que significa que tienes unas ganancias potenciales de " + format(totalBeneficios) + " monedas"
 				if len(listaJugadores) < 1:
 					print "No hay jugadores disponibles para vender. Volviendo al menú..."
 					dormir(2)
@@ -399,6 +396,53 @@ while True:
 				print "No hay jugadores para añadir a la lista de transferibles, volviendo al menú"
 				dormir(2)
 		elif ans=="7":
+			totalArticulosLista = len(session.tradepile())
+			listaTransferibles = session.tradepile()
+			if totalArticulosLista > 0:
+				listaJugadores = []
+				listaPrecios = []
+				listaNombres = []
+				x = 0
+				contarJugadores = 0
+				print "\n"
+				for jugador in listaTransferibles:
+					estado = jugador.get("tradeState")
+					if estado != "active":
+						idBuscar = jugador.get("resourceId")
+						id = jugador.get("id")
+						idBuscar = str(idBuscar)
+						contarJugadores = contarJugadores + 1
+						fifaurl = url + '{"id":"' + idBuscar + '"}'
+						response = urllib.urlopen(fifaurl)
+						playerInfo = json.loads(response.read())
+						idJugador = playerInfo["items"][0]["id"]
+						nombre = (playerInfo["items"][0]["name"]).encode('utf8')
+						listaNombres.append(nombre)
+						listaJugadores.append(id)
+						listaPrecios.append(idJugador)
+				for x in range(contarJugadores):
+					nombreJugador = listaNombres[x]
+					jugadorVender = listaJugadores[x]
+					precioJugador = getPrecio("buscar", listaPrecios[x])
+					precioJugador = formatearPrecio(precioJugador)
+					vender = raw_input ("¿Quieres vender a " + nombreJugador + " por " + format(precioJugador) + " monedas? S/N" ).encode('utf8')
+					if vender == "S" or vender == "s":
+						try:
+							session.sell(jugadorVender, precioJugador-100, precioJugador+100, 3600, True)
+							print listaNombres[x] + " puesto a la venta a " + format(precioJugador-100) + " monedas y " + format(
+								precioJugador+100) + " en compra ya "
+						except:
+							print "\nHa ocurrido un problema a la hora de poner los jugadores en venta. "
+					dormir(10)
+				if len(listaJugadores) < 1:
+					print "No hay jugadores disponibles para vender. Volviendo al menú..."
+					dormir(2)
+			else:
+				print "\nNo hay jugadores en la lista de transferibles. "
+				print "Volviendo al menú..."
+				dormir(2)
+				menu()
+		elif ans=="8":
 			menu()
 	elif ans=="3":
 		print "\nAdios!!"

@@ -1,3 +1,4 @@
-email = "Introduce tu email"
-password = "Introduce tu contraseña"
-respuesta = "Introduce la respuesta a tu contraseña de seguridad"
+email = "Escribe tu correo electrónico"
+password = "Escribe tu contraseña"
+respuesta = "Escribe tu respuesta de seguridad"
+plataforma = "Escribe tu plataforma"
