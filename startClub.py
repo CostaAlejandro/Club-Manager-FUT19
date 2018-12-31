@@ -86,6 +86,7 @@ def buscarJugador():
 		if precioPujar < precioMinimo:
 			precioPujar = precioMinimo
 		x = 0
+		print "El precio por el que se pujará será: " + format(precioPujar)
 		#print contadorJ
 
 
@@ -97,7 +98,7 @@ def buscarJugador():
 			current = listSearchedPlayer[0]["currentBid"]
 			current = int(current)
 
-			print "Intento n. " + format(x) + " - puja actual: " + format(current)
+			print "Intento n. " + format(x) + " - puja actual: " + format(current) + " - comprados: " + format(comprados)
 			if current < precioPujar:
 				print "Realizando puja por " + format(precioPujar) + " monedas quedando " + format(segundosRestantes) + " segundos para que acabe la puja"
 				session.bid(tradeId,precioPujar,True)
