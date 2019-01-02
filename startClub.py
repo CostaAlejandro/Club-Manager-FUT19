@@ -73,13 +73,14 @@ def buscarJugador():
 		buscar = input("Selecciona la carta a buscar. ")
 		buscar = buscar - 1
 		print "Has seleccionado al jugador " + format(buscar+1)
-		jugadoresAComprar = input("¿Cuantos jugadores vas a querer comprar? ")
 		precioJugador = getPrecio(jugador, selJugador[buscar])
 		precioJugador = formatearPrecio(precioJugador)
 		print (busqueda["items"][buscar]["name"] + " segun Futbin, vale " + format(precioJugador) + " monedas.").encode('utf8')
+		jugadoresAComprar = input("¿Cuantos jugadores vas a querer comprar? ")
 		porcentaje = input("¿A que porcentaje del precio vas a querer comprar el jugador? 100 = precio marcado por futbin ")
 		precioPujar = precioPuja(precioJugador, porcentaje)
 		precioMinimo = getMinPrecio(jugador, selJugador[buscar])
+		precioMinimo = formatearPrecio(precioMinimo)
 		precioMinimo = int(precioMinimo)
 		precioPujar = int(precioPujar)
 		comprados = 0
@@ -88,20 +89,20 @@ def buscarJugador():
 		x = 0
 		print "El precio por el que se pujará será: " + format(precioPujar)
 		#print contadorJ
-
-
+		i = 0
 		while comprados < jugadoresAComprar:
 			x = x + 1
 			listSearchedPlayer = session.search(ctype="player", defId=selJugador[buscar], max_price=precioPujar)
-			tradeId = listSearchedPlayer[0]["tradeId"]
-			segundosRestantes = listSearchedPlayer[0]["expires"]
-			current = listSearchedPlayer[0]["currentBid"]
+			tradeId = listSearchedPlayer[i]["tradeId"]
+			segundosRestantes = listSearchedPlayer[i]["expires"]
+			current = listSearchedPlayer[i]["currentBid"]
 			current = int(current)
-
+			i = i + 1
 			print "Intento n. " + format(x) + " - puja actual: " + format(current) + " - comprados: " + format(comprados)
 			if current < precioPujar:
 				print "Realizando puja por " + format(precioPujar) + " monedas quedando " + format(segundosRestantes) + " segundos para que acabe la puja"
 				session.bid(tradeId,precioPujar,True)
+				i = 0
 				print "Se ha pujado correctamente..."
 				print "Esperando el tiempo restante que le queda a la puja... (" + format(segundosRestantes) + " segundos)"
 				dormir(segundosRestantes)
@@ -271,11 +272,14 @@ while True:
 						print (format(contarJugadores) + ". " + playerInfo["items"][0]["name"] + " (" + \
 							  playerInfo["items"][0]["position"]+ " " + format(rating) + " - " +playerInfo["items"][0]["quality"] + " " + rarity + ")	VALOR COMPRA: " + format(precioCompra) + "VALOR ACTUAL: " + format(precioJugador) + " monedas").encode('utf8')
 						listaJugadores.append(id)
+				totalBeneficios = totalGanado - totalGastado
+				print "Habiendo gastado " + format(totalGastado) + " monedas, tu lista de transferibles tiene un valor de " + format(totalGanado) + " monedas, lo que significa que tienes unas ganancias potenciales de " + format(totalBeneficios) + " monedas"
+
 				for x in range (contarJugadores):
 					buscar = input("\n¿Qué jugador quieres poner a la venta en el mercado? ")
 					buscar = buscar - 1
 					print "Has seleccionado al " + format(buscar + 1)
- 					jugadorVender = listaJugadores[buscar]
+					jugadorVender = listaJugadores[buscar]
 					precioVender = input("¿A qué precio deseas poner el jugador a la venta? ")
 					precioCompraYa = input("¿Y precio de compra ya?")
 					try:
@@ -288,8 +292,6 @@ while True:
 						otroJugador = True
 					if otroJugador == True:
 						break
-				totalBeneficios = totalGanado - totalGastado
-				print "Habiendo gastado " + format(totalGastado) + " monedas, tu lista de transferibles tiene un valor de " + format(totalGanado) + " monedas, lo que significa que tienes unas ganancias potenciales de " + format(totalBeneficios) + " monedas"
 				if len(listaJugadores) < 1:
 					print "No hay jugadores disponibles para vender. Volviendo al menú..."
 					dormir(2)
