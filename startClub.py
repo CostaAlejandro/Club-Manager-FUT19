@@ -428,15 +428,15 @@ while True:
 					jugadorVender = listaJugadores[x]
 					precioJugador = getPrecio("buscar", listaPrecios[x])
 					precioJugador = formatearPrecio(precioJugador)
+					precioVenta = precioPuja(precioJugador, 99)
 					vender = raw_input ("¿Quieres vender a " + nombreJugador + " por " + format(precioJugador) + " monedas? S/N" ).encode('utf8')
 					if vender == "S" or vender == "s":
 						try:
-							session.sell(jugadorVender, precioJugador-100, precioJugador+100, 3600, True)
-							print listaNombres[x] + " puesto a la venta a " + format(precioJugador-100) + " monedas y " + format(
-								precioJugador+100) + " en compra ya "
+							session.sell(jugadorVender, precioVenta, precioJugador, 3600, True)
+							print listaNombres[x] + " puesto a la venta a " + format(precioVenta) + " monedas y " + format(precioJugador) + " en compra ya "
+							dormir(10)
 						except:
 							print "\nHa ocurrido un problema a la hora de poner los jugadores en venta. "
-					dormir(10)
 				if len(listaJugadores) < 1:
 					print "No hay jugadores disponibles para vender. Volviendo al menú..."
 					dormir(2)
